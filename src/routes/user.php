@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\User\BinaryContoller;
 use App\Http\Controllers\User\CommissionsController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\InvestmentController;
@@ -16,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('users/')->name('user.')->middleware(['auth', 'verified', 'firewall.all', 'installer'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::get('/settings', [HomeController::class, 'setting'])->name('setting');
-    Route::get('/transactions',[HomeController::class, 'transactions'])->name('transaction');
-    Route::get('/find',[HomeController::class, 'findUser'])->name('find.user');
-    Route::get('/investment-rewards',[InvestmentController::class, 'investmentReward'])->name('reward');
+    Route::get('/transactions', [HomeController::class, 'transactions'])->name('transaction');
+    Route::get('/find', [HomeController::class, 'findUser'])->name('find.user');
+    Route::get('/investment-rewards', [InvestmentController::class, 'investmentReward'])->name('reward');
 
     //Identity
     Route::get('/verify-identity', [HomeController::class, 'verifyIdentity'])->name('verify.identity');
@@ -50,6 +51,13 @@ Route::prefix('users/')->name('user.')->middleware(['auth', 'verified', 'firewal
         Route::post('store/{id}', [TradeController::class, 'store'])->name('store');
         Route::get('logs', [TradeController::class, 'tradeLog'])->name('tradelog');
         Route::get('practices/logs', [TradeController::class, 'practiceLog'])->name('practicelog');
+    });
+
+    Route::prefix('binary')->name('binary.')->group(function () {
+        Route::get('commodities', [BinaryContoller::class, 'commodities'])->name('commodities');
+        Route::get('forex', [BinaryContoller::class, 'forex'])->name('forex');
+        Route::get('stocks', [BinaryContoller::class, 'stocks'])->name('stocks');
+        Route::get('history', [BinaryContoller::class, 'history'])->name('history');
     });
 
     //Investments
