@@ -44,11 +44,42 @@ class BinaryContoller extends Controller
         return view('user.binary.stocks')->with($data);
     }
 
-    public function trade(string $type, string $symbol) {}
+    public function trade(string $type, string $symbol)
+    {
+        if ($type == 'stock') {
+            $pair = strtoupper($symbol);
+        } else {
+            if (strpos(strtolower($symbol), 'usd') == false) {
+                $pair = strtoupper($symbol) . "USD";
+            } else {
+                $pair = strtoupper($symbol);
+            }
+        }
+
+        $data = [
+            'setTitle' => 'Trade  ' . strtoupper($type),
+            'symbol' => $symbol,
+            'type' => $type,
+            'pair' => $pair
+        ];
+
+        return view('user.binary.trade')->with($data);
+    }
 
     public function tradeStock(Request $request)
     {
         $binary = new Binary(isStock: true);
+        return $binary->store($request);
+    }
+    public function tradeCommodity(Request $request)
+    {
+        $binary = new Binary(isCommodity: true);
+        return $binary->store($request);
+    }
+
+    public function tradeForex(Request $request)
+    {
+        $binary = new Binary(isForex: true);
         return $binary->store($request);
     }
 }
