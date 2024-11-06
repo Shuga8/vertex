@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Lib;
+
 
 class Binary
 {
@@ -8,7 +10,7 @@ class Binary
     public $isForex;
     public $isStock;
 
-    public function __construct($isCommodity = false, $isForex = false, $isStock)
+    public function __construct($isCommodity = false, $isForex = false, $isStock = false)
     {
         $this->isCommodity = $isCommodity;
         $this->isForex = $isForex;
