@@ -177,6 +177,8 @@
                                         <th>{{ __('Price Was') }}</th>
                                         <th>{{ __('Direction') }}</th>
                                         <th>{{ __('Ticker') }}</th>
+                                        <th>{{ __('Take Profit') }}</th>
+                                        <th>{{ __('Stop Loss') }}</th>
                                         <th>{{ __('Status') }}</th>
                                     </tr>
                                 </thead>
@@ -188,22 +190,21 @@
                                                 {{ showDateTime($tradeLog->created_at) }}
                                             </td>
                                             <td data-label="{{ __('Open Amount') }}">
-                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->open_amount) }}
+                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->open_amount, 4, '.', ',') }}
                                             </td>
                                             <td data-label="{{ __('Current Amount') }}">
-                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->amount) }}
+                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->amount, 4, '.', ',') }}
                                             </td>
                                             <td data-label="{{ __('Price Is') }}">
-                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->price_is) }}
+                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->price_is, 4, '.', ',') }}
                                             </td>
                                             <td data-label="{{ __('Price Was') }}">
-                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->price_was) }}
+                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->price_was, 4, '.', ',') }}
                                             </td>
                                             <td data-label="{{ __('Direction') }}">
                                                 <span
                                                     class="i-badge {{ $tradeLog->trade_type == 'sell' ? 'badge--danger' : 'badge--success' }}">{{ strtoupper($tradeLog->trade_type) }}</span>
                                             </td>
-
                                             <td data-label="{{ __('Ticker') }}">
 
                                                 @php
@@ -218,6 +219,19 @@
 
                                                 {{ $ticker }}
                                             </td>
+                                            <td data-label="{{ __('Take Profit') }}">
+                                                <span class="i-badge badge--success">
+                                                    {{ getCurrencySymbol() }}{{ number_format($tradeLog->take_profit, 4, '.', ',') }}
+                                                </span>
+                                            </td>
+                                            <td data-label="{{ __('Stop Loss') }}">
+                                                <span class="i-badge badge--danger">
+                                                    {{ getCurrencySymbol() }}{{ number_format($tradeLog->stop_loss, 4, '.', ',') }}
+                                                </span>
+                                            </td>
+
+
+
 
                                             <td data-label="{{ __('Status') }}">
                                                 <span
@@ -236,6 +250,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mt-4">{{ $tradeLogs->links() }}</div>
                     </div>
                 </div>
             </div>

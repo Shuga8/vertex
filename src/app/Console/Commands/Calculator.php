@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Lib\Ascension;
 use Illuminate\Console\Command;
 
 class Calculator extends Command
@@ -23,5 +24,12 @@ class Calculator extends Command
     /**
      * Execute the console command.
      */
-    public function handle() {}
+    public function handle()
+    {
+        $binary = new Ascension();
+        if ($binary->updatePriceIs() != false) {
+            $binary->setPips();
+            $this->info('binary calculation for this instance is successfull');
+        }
+    }
 }
