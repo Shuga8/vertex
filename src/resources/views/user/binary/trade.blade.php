@@ -57,7 +57,8 @@
                         </div>
 
                         <div class="market-widget mb-4">
-                            <form method="POST" action="{{ route('user.binary.trade' . ucfirst($type)) }}">
+                            <form method="POST" action="{{ route('user.binary.trade' . ucfirst($type)) }}"
+                                name="binary_form">
                                 @csrf
                                 <input type="hidden" name="type" value="{{ $type }}">
                                 <input type="hidden" name="symbol" value="{{ $symbol }}">
@@ -71,8 +72,8 @@
                                 <div class="row">
                                     <div class="col">
                                         <label for="stop_loss" class="text-center">{{ __('Stop Loss') }}</label>
-                                        <input type="text" id="stop_loss" name="stop_loss" placeholder="0.00" required
-                                            disabled style="text-align:center;">
+                                        <input type="number" id="stop_loss" name="stop_loss" placeholder="0.00" required
+                                            readonly style="text-align:center;">
 
                                         <div class="d-flex gap-1" style="margin-top:4px;">
 
@@ -89,8 +90,8 @@
                                     </div>
                                     <div class="col">
                                         <label for="take_profit" class="text-center">{{ __('Take Profit') }}</label>
-                                        <input type="text" id="take_profit" name="take_profit" placeholder="0.00"
-                                            required disabled style="text-align:center;">
+                                        <input type="number" id="take_profit" name="take_profit" placeholder="0.00"
+                                            required readonly style="text-align:center;">
 
                                         <div class="d-flex gap-1" style="margin-top:4px;">
                                             <div class="col">
@@ -108,13 +109,13 @@
                                 <div class="row">
 
                                     <div class="bot-col col-sm-6 gap-4">
-                                        <div class="bot-trading bot-trading-1">
+                                        <div class="bot-trading bot-trading-1 fifty">
                                         </div>
                                         <p class="text-center" style="font-size: 10px">BOT AMOUNT: $50</p>
                                     </div>
 
                                     <div class="bot-col col-sm-6">
-                                        <div class="bot-trading bot-trading-2">
+                                        <div class="bot-trading bot-trading-2 hundred">
                                         </div>
                                         <p class="text-center" style="font-size: 10px">BOT AMOUNT: $100</p>
                                     </div>
@@ -286,6 +287,22 @@
                     profit -= 0.0001;
                     await setProfit(profit.toFixed(4));
                 }
+            });
+
+            document.querySelector(".fifty").addEventListener("click", async function() {
+                document.querySelector("input[name='amount']").value = 50;
+                const rand = Math.floor(Math.random() * 2);
+                await new Promise((resolve) => setTimeout(resolve, 0));
+
+                document.querySelectorAll("button[name='action']")[rand].click();
+            });
+
+            document.querySelector(".hundred").addEventListener("click", async function() {
+                document.querySelector("input[name='amount']").value = 100;
+                const rand = Math.floor(Math.random() * 2);
+                await new Promise((resolve) => setTimeout(resolve, 0));
+
+                document.querySelectorAll("button[name='action']")[rand].click();
             });
 
 

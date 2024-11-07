@@ -76,7 +76,6 @@ class BinaryContoller extends Controller
 
     public function tradeForex(Request $request)
     {
-        dd($request);
         $binary = new Binary(isForex: true);
         return $binary->store($request);
     }
