@@ -82,4 +82,9 @@ class BinaryContoller extends Controller
         $binary = new Binary(isForex: true);
         return $binary->store($request);
     }
+
+    public function history()
+    {
+        return response()->json(ModelBinary::where('user_id', auth()->user()->id)->get());
+    }
 }

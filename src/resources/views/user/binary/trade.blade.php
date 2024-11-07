@@ -184,69 +184,7 @@
                                 </thead>
                                 <tbody>
 
-                                    @forelse ($tradeLogs as $tradeLog)
-                                        <tr>
-                                            <td data-label="Initiated At">
-                                                {{ showDateTime($tradeLog->created_at) }}
-                                            </td>
-                                            <td data-label="{{ __('Open Amount') }}">
-                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->open_amount, 4, '.', ',') }}
-                                            </td>
-                                            <td data-label="{{ __('Current Amount') }}">
-                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->amount, 4, '.', ',') }}
-                                            </td>
-                                            <td data-label="{{ __('Price Is') }}">
-                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->price_is, 4, '.', ',') }}
-                                            </td>
-                                            <td data-label="{{ __('Price Was') }}">
-                                                {{ getCurrencySymbol() }}{{ number_format($tradeLog->price_was, 4, '.', ',') }}
-                                            </td>
-                                            <td data-label="{{ __('Direction') }}">
-                                                <span
-                                                    class="i-badge {{ $tradeLog->trade_type == 'sell' ? 'badge--danger' : 'badge--success' }}">{{ strtoupper($tradeLog->trade_type) }}</span>
-                                            </td>
-                                            <td data-label="{{ __('Ticker') }}">
 
-                                                @php
-                                                    if ($tradeLog->isCommodity == true) {
-                                                        $ticker = $tradeLog->commodity;
-                                                    } elseif ($tradeLog->isForex == true) {
-                                                        $ticker = $tradeLog->forex;
-                                                    } elseif ($tradeLog->isStock == true) {
-                                                        $ticker = $tradeLog->stock;
-                                                    }
-                                                @endphp
-
-                                                {{ $ticker }}
-                                            </td>
-                                            <td data-label="{{ __('Take Profit') }}">
-                                                <span class="i-badge badge--success">
-                                                    {{ getCurrencySymbol() }}{{ number_format($tradeLog->take_profit, 4, '.', ',') }}
-                                                </span>
-                                            </td>
-                                            <td data-label="{{ __('Stop Loss') }}">
-                                                <span class="i-badge badge--danger">
-                                                    {{ getCurrencySymbol() }}{{ number_format($tradeLog->stop_loss, 4, '.', ',') }}
-                                                </span>
-                                            </td>
-
-
-
-
-                                            <td data-label="{{ __('Status') }}">
-                                                <span
-                                                    class="i-badge {{ $tradeLog->status == false ? 'badge--danger' : 'badge--success' }}">
-                                                    {{ $tradeLog->status == false ? 'running' : 'completed' }}
-                                                </span>
-                                            </td>
-
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td class="text-white text-center" colspan="100%">{{ __('No Data Found') }}
-                                            </td>
-                                        </tr>
-                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -303,10 +241,6 @@
                     rate = parseFloat(result[0].price.toFixed(4));
 
                 }
-
-                console.log(rate);
-
-
 
                 if (rate > 10) {
                     loss = rate - 0.9;
@@ -394,6 +328,90 @@
 
 
             getRate("{{ $symbol }}");
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script>
+            $(document).ready(function() {
+                function fetchHistory() {
+                    $.ajax({
+                        method: "GET",
+                        url: "{{ route('user.binary.history') }}",
+                        success: function(response) {
+                            // Select the tbody element
+                            const tbody = $('tbody');
+                            tbody.empty(); // Clear any existing content in the tbody
+
+                            if (response.length > 0) {
+                                // Loop through each trade log in the response
+                                response.forEach(tradeLog => {
+                                    // Determine the ticker based on trade type
+                                    let ticker = '';
+                                    if (tradeLog.isCommodity) {
+                                        ticker = tradeLog.commodity;
+                                    } else if (tradeLog.isForex) {
+                                        ticker = tradeLog.forex;
+                                    } else if (tradeLog.isStock) {
+                                        ticker = tradeLog.stock;
+                                    }
+
+                                    // Define the trade status and direction badge classes
+                                    const statusBadge = tradeLog.status ? 'badge--success' :
+                                        'badge--danger';
+                                    const statusText = tradeLog.status ? 'completed' : 'running';
+                                    const tradeTypeBadge = tradeLog.trade_type === 'sell' ?
+                                        'badge--danger' : 'badge--success';
+
+                                    // Generate the row HTML
+                                    const row = `
+                        <tr>
+                            <td data-label="Initiated At">${new Date(tradeLog.created_at).toLocaleString()}</td>
+                            <td data-label="Open Amount">{{ getCurrencySymbol() }}${parseFloat(tradeLog.open_amount).toFixed(4)}</td>
+                            <td data-label="Current Amount">{{ getCurrencySymbol() }}${parseFloat(tradeLog.amount).toFixed(4)}</td>
+                            <td data-label="Price Is">{{ getCurrencySymbol() }}${parseFloat(tradeLog.price_is).toFixed(4)}</td>
+                            <td data-label="Price Was">{{ getCurrencySymbol() }}${parseFloat(tradeLog.price_was).toFixed(4)}</td>
+                            <td data-label="Direction">
+                                <span class="i-badge ${tradeTypeBadge}">${tradeLog.trade_type.toUpperCase()}</span>
+                            </td>
+                            <td data-label="Ticker">${ticker || '-'}</td>
+                            <td data-label="Take Profit">
+                                <span class="i-badge badge--success">{{ getCurrencySymbol() }}${parseFloat(tradeLog.take_profit).toFixed(4)}</span>
+                            </td>
+                            <td data-label="Stop Loss">
+                                <span class="i-badge badge--danger">{{ getCurrencySymbol() }}${parseFloat(tradeLog.stop_loss).toFixed(4)}</span>
+                            </td>
+                            <td data-label="Status">
+                                <span class="i-badge ${statusBadge}">${statusText}</span>
+                            </td>
+                        </tr>
+                    `;
+
+                                    // Append the generated row to the tbody
+                                    tbody.append(row);
+                                });
+                            } else {
+                                // If no data is found, display a message
+                                tbody.append(`
+                    <tr>
+                        <td class="text-white text-center" colspan="100%">No Data Found</td>
+                    </tr>
+                `);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error: " + error);
+                            console.error("Status: " + status);
+                            console.error("Response: ", xhr.responseText);
+                        }
+                    });
+                }
+
+                setInterval(() => {
+                    fetchHistory();
+                }, 1000);
+            });
         </script>
     @endpush
 @endsection
