@@ -62,6 +62,7 @@ Route::prefix('users/')->name('user.')->middleware(['auth', 'verified', 'firewal
         Route::post('storeStock', [BinaryContoller::class, 'tradeStock'])->name('tradeStock');
         Route::post('storeCommodity', [BinaryContoller::class, 'tradeCommodity'])->name('tradeCommodity');
         Route::post('storeForex', [BinaryContoller::class, 'tradeForex'])->name('tradeForex');
+        Route::get('end/{id}', [BinaryContoller::class, 'end'])->name('end');
     });
 
     //Investments

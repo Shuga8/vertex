@@ -4,9 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Lib\Binary;
 use App\Models\Stock;
+use App\Models\Wallet;
 use App\Models\Currency;
 use App\Models\Commodity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Binary as ModelBinary;
 
@@ -86,5 +88,37 @@ class BinaryContoller extends Controller
     public function history()
     {
         return response()->json(ModelBinary::where('user_id', auth()->user()->id)->get());
+    }
+
+    public function end($id)
+    {
+        $trade = ModelBinary::where('id', (int) $id)->first();
+        $wallet = Wallet::where('user_id', $trade->user_id)->first();
+
+        if (!$trade || !$wallet) {
+            $notify[] = ['error', 'invalid action'];
+            return back()->withNotify($notify);
+        }
+
+        $balance = max(0, $trade->amount);
+
+        try {
+            DB::beginTransaction();
+
+            // Close the trade and update wallet balance
+            $trade->status = true;
+            $wallet->trade_balance += $balance;
+
+            $trade->save();
+            $wallet->save();
+
+            DB::commit();
+            $notify[] = ['success', 'Trade Closed Successfully'];
+            return back()->withNotify($notify);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $notify[] =  ['error', $trade->id . ': ' . $e->getMessage()];
+            return back()->withNotify($notify);
+        }
     }
 }

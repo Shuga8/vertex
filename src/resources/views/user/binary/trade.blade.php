@@ -172,7 +172,7 @@
                                     <tr>
                                         <th>{{ __('Initiated At') }}</th>
                                         <th>{{ __('Open Amout') }}</th>
-                                        <th>{{ __('Current Amount') }}</th>
+                                        <th>{{ __('Current/Closed Amount') }}</th>
                                         <th>{{ __('Price Is') }}</th>
                                         <th>{{ __('Price Was') }}</th>
                                         <th>{{ __('Direction') }}</th>
@@ -180,6 +180,7 @@
                                         <th>{{ __('Take Profit') }}</th>
                                         <th>{{ __('Stop Loss') }}</th>
                                         <th>{{ __('Status') }}</th>
+                                        <th>{{ __('Action') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -385,6 +386,11 @@
                             <td data-label="Status">
                                 <span class="i-badge ${statusBadge}">${statusText}</span>
                             </td>
+                            <td data-label="Action">
+                                ${statusText == "running" ? `<a class="i-btn btn--md btn--danger capsuled" href="{{ config('app.url') }}/users/isolation/end/${tradeLog.id}">End</a>
+                                                                                                </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
+                                                                                                </td>` }
+                                
                         </tr>
                     `;
 
@@ -410,7 +416,7 @@
 
                 setInterval(() => {
                     fetchHistory();
-                }, 1000);
+                }, 3000);
             });
         </script>
     @endpush
