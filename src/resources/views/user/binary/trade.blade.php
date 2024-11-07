@@ -24,7 +24,7 @@
                                         {
                                             "autosize": true,
                                             "width": "100%",
-                                            "height": "700",
+                                            "height": "750",
                                             "symbol": "{{ $pair }}",
                                             "interval": "1",
                                             "timezone": "Etc/UTC",
@@ -65,20 +65,43 @@
 
                                 <div class="input-single">
                                     <label for="amount">{{ __('Amount') }}</label>
-                                    <input type="text" id="amount" name="amount" value="{{ old('amount') }}"
-                                        placeholder="0.00" required>
+                                    <input type="text" id="amount" name="amount" placeholder="0.00" required>
                                 </div>
 
                                 <div class="row">
                                     <div class="col">
-                                        <label for="stop_loss">{{ __('Stop Loss') }}</label>
-                                        <input type="number" id="stop_loss" name="stop_loss"
-                                            value="{{ old('stop_loss') }}" placeholder="0.00" required>
+                                        <label for="stop_loss" class="text-center">{{ __('Stop Loss') }}</label>
+                                        <input type="text" id="stop_loss" name="stop_loss" placeholder="0.00" required
+                                            disabled style="text-align:center;">
+
+                                        <div class="d-flex gap-1" style="margin-top:4px;">
+
+                                            <div class="col">
+                                                <button class="sub-loss" type="button"
+                                                    style="background: #ddd;color: #000;width:100%;">-</button>
+                                            </div>
+                                            <div class="col">
+                                                <button class="add-loss" type="button"
+                                                    style="background: #ddd;color: #000;width:100%;">+</button>
+                                            </div>
+
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <label for="take_profit">{{ __('Take Profit') }}</label>
-                                        <input type="number" id="take_profit" name="take_profit"
-                                            value="{{ old('take_profit') }}" placeholder="0.00" required>
+                                        <label for="take_profit" class="text-center">{{ __('Take Profit') }}</label>
+                                        <input type="text" id="take_profit" name="take_profit" placeholder="0.00"
+                                            required disabled style="text-align:center;">
+
+                                        <div class="d-flex gap-1" style="margin-top:4px;">
+                                            <div class="col">
+                                                <button class="sub-profit" type="button"
+                                                    style="background: #ddd;color: #000;width:100%;">-</button>
+                                            </div>
+                                            <div class="col">
+                                                <button class="add-profit" type="button"
+                                                    style="background: #ddd;color: #000;width:100%;">+</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -100,11 +123,16 @@
 
                                 <div class="d-flex justify-content-center align-items-center gap-3">
                                     <button class="i-btn btn--md btn--danger capsuled w-100"
-                                        style="display: flex;flex-direction:row;column-gap:3px;place-items: baseline;">Sell<small
-                                            class="small-loss" style="font-size: inherit;"></small></button>
+                                        style="display: flex;flex-direction:row;column-gap:3px;place-items: baseline;"
+                                        name="action" value="sell">
+                                        Sell
+                                        <small class="small-loss" style="font-size: inherit;"></small>
+                                    </button>
+
                                     <button class="i-btn btn--md btn--success capsuled w-100"
-                                        style="display: flex;flex-direction:row;column-gap:3px;place-items: baseline;">Buy<small
-                                            class="small-profit" style="font-size: inherit;"></small></button>
+                                        style="display: flex;flex-direction:row;column-gap:3px;place-items: baseline;"
+                                        name="action" value="buy">Buy<small class="small-profit"
+                                            style="font-size: inherit;"></small></button>
                                 </div>
 
                                 <div class="row">
@@ -113,7 +141,8 @@
                                     <div class="tradingview-widget-container">
                                         <div class="tradingview-widget-container__widget"></div>
                                         <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/"
-                                                rel="noopener nofollow" target="_blank"><span class="blue-text">Track all
+                                                rel="noopener nofollow" target="_blank"><span class="blue-text">Track
+                                                    all
                                                     markets on TradingView</span></a></div>
                                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js"
                                             async>
@@ -143,36 +172,69 @@
     @push('script-push')
         <script type="text/javascript">
             const fmp_api_key = "cARpiP1yH7faNhSWqnQLyGNV0mc7oTxl";
+            const fastforex_api_key = "5952fd138c-5327d8b2a6-smk0x3";
             let rate = 0;
+            let loss = 0;
+            let profit = 0;
+            let type = "{{ $type }}";
+
+            console.log(type);
             async function getRate(symbol) {
+                const myHeaders = new Headers();
+                myHeaders.append("Accept", "application/json");
                 const requestOptions = {
                     method: "GET",
                     redirect: "follow",
                 };
 
-                const response = await fetch(
-                    `https://financialmodelingprep.com/api/v3/profile/${symbol}?apikey=${fmp_api_key}`,
-                    requestOptions
-                );
-                const result = await response.json();
-                rate = result[0].price;
+                let response = null
+
+                if (type == "commodity") {
+                    response = await fetch(
+                        `https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${fmp_api_key}`,
+                        requestOptions
+                    );
+                    const result = await response.json();
+                    rate = result[0].price;
+
+                } else if (type == "forex") {
+                    requestOptions.headers = myHeaders;
+                    response = await fetch(
+                        `https://api.fastforex.io/convert?from=${symbol}&to=USD&amount=1&api_key=${fastforex_api_key}`,
+                        requestOptions
+                    );
+                    const result = await response.json();
+                    rate = parseFloat(result.result.rate.toFixed(2));
+
+                } else {
+                    response = await fetch(
+                        `https://financialmodelingprep.com/api/v3/profile/${symbol}?apikey=${fmp_api_key}`,
+                        requestOptions
+                    );
+                    const result = await response.json();
+                    rate = result[0].price;
+
+                }
 
                 console.log(rate);
 
-                let loss = 0;
-                let profit = 0;
+
 
                 if (rate > 10) {
                     loss = rate - 0.9;
                     profit = rate + 0.9;
+                    await setLoss(loss.toFixed(2));
+                    await setProfit(profit.toFixed(2));
                 } else {
                     loss = rate - 0.0009;
                     profit = rate + 0.0009;
+                    await setLoss(loss.toFixed(4));
+                    await setProfit(profit.toFixed(4));
                 }
 
                 document.querySelector("#rate").value = rate;
-                await setLoss(loss);
-                await setProfit(profit);
+
+
 
             }
 
@@ -185,6 +247,47 @@
                 document.querySelector("#take_profit").value = amount;
                 document.querySelector(".small-profit").textContent = `(${amount})`;
             }
+
+            document.querySelector(".add-loss").addEventListener("click", async function() {
+                if (rate > 10) {
+                    loss += 0.1;
+                    await setLoss(loss.toFixed(2));
+                } else {
+                    loss += 0.0001;
+                    await setLoss(loss.toFixed(4));
+                }
+            });
+
+            document.querySelector(".sub-loss").addEventListener("click", async function() {
+                if (rate > 10) {
+                    loss -= 0.1;
+                    await setLoss(loss.toFixed(2));
+                } else {
+                    loss -= 0.0001;
+                    await setLoss(loss.toFixed(4));
+                }
+            });
+
+            document.querySelector(".add-profit").addEventListener("click", async function() {
+                if (rate > 10) {
+                    profit += 0.1;
+                    await setProfit(profit.toFixed(2));
+                } else {
+                    profit += 0.0001;
+                    await setProfit(profit.toFixed(4));
+                }
+            });
+
+            document.querySelector(".sub-profit").addEventListener("click", async function() {
+                if (rate > 10) {
+                    profit -= 0.1;
+                    await setProfit(profit.toFixed(2));
+                } else {
+                    profit -= 0.0001;
+                    await setProfit(profit.toFixed(4));
+                }
+            });
+
 
             getRate("{{ $symbol }}");
         </script>

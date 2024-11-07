@@ -17,5 +17,9 @@ class Binary
         $this->isStock = $isStock;
     }
 
-    public function store($request) {}
+    public function store($request)
+    {
+
+        dd($request);
+    }
 }

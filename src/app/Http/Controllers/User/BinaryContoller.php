@@ -46,14 +46,11 @@ class BinaryContoller extends Controller
 
     public function trade(string $type, string $symbol)
     {
-        if ($type == 'stock') {
-            $pair = strtoupper($symbol);
+
+        if (strpos(strtolower($symbol), 'usd') == false && $type !== "stock" && $type !== "commodity") {
+            $pair = strtoupper($symbol) . "USD";
         } else {
-            if (strpos(strtolower($symbol), 'usd') == false) {
-                $pair = strtoupper($symbol) . "USD";
-            } else {
-                $pair = strtoupper($symbol);
-            }
+            $pair = strtoupper($symbol);
         }
 
         $data = [
@@ -79,6 +76,7 @@ class BinaryContoller extends Controller
 
     public function tradeForex(Request $request)
     {
+        dd($request);
         $binary = new Binary(isForex: true);
         return $binary->store($request);
     }
