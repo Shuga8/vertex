@@ -13,9 +13,12 @@ enum Source: int
     case INVESTMENT = 3;
     case TRADE = 4;
 
+    case BINARY = 5;
 
-    public static function getColor(int $status): string {
-        return match($status) {
+
+    public static function getColor(int $status): string
+    {
+        return match ($status) {
             self::ALL->value => 'badge--primary',
             self::MATRIX->value => 'badge--info',
             self::INVESTMENT->value => 'badge--success',
@@ -24,8 +27,9 @@ enum Source: int
         };
     }
 
-    public static function getName(int $status): string {
-        return match($status) {
+    public static function getName(int $status): string
+    {
+        return match ($status) {
             self::ALL->value => 'All',
             self::MATRIX->value => 'Matrix',
             self::INVESTMENT->value => 'Investment',
