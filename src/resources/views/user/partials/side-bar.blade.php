@@ -137,7 +137,7 @@
                 <div class="side-menu-dropdown collapse {{ request()->routeIs('user.binary.*') ? 'show' : '' }}"
                     id="collapseBinary">
                     <ul class="sub-menu  {{ request()->routeIs('user.binary.*') ? 'open-slide' : '' }}">
-                        @foreach (['commodities' => 'Commodity', 'forex' => 'Forex', 'stocks' => 'Stocks', 'history' => 'History'] as $trade => $label)
+                        @foreach (['forex' => 'Forex', 'commodities' => 'Commodity', 'stocks' => 'Stocks'] as $trade => $label)
                             <li class="sub-menu-item">
                                 <a class="sidebar-menu-link {{ request()->routeIs("user.binary.$trade") ? 'active' : '' }}"
                                     href="{{ route("user.binary.$trade") }}" aria-expanded="false">

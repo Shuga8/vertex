@@ -128,4 +128,9 @@ class User extends Authenticate implements MustVerifyEmail
     {
         return $this->hasMany(Deposit::class)->where('status', Status::SUCCESS->value);
     }
+
+    public function binaries(): HasMany
+    {
+        return $this->hasMany(Binary::class, 'user_id');
+    }
 }

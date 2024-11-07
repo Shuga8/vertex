@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
 use App\Lib\Binary;
-use App\Models\Commodity;
-use App\Models\Currency;
 use App\Models\Stock;
+use App\Models\Currency;
+use App\Models\Commodity;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Binary as ModelBinary;
 
 class BinaryContoller extends Controller
 {
-    public function index() {}
 
     public function commodities()
     {
@@ -57,8 +57,11 @@ class BinaryContoller extends Controller
             'setTitle' => 'Trade  ' . strtoupper($type),
             'symbol' => $symbol,
             'type' => $type,
-            'pair' => $pair
+            'pair' => $pair,
+            'tradeLogs' => ModelBinary::where('user_id', auth()->user()->id)->paginate(getPaginate())
         ];
+
+
 
         return view('user.binary.trade')->with($data);
     }

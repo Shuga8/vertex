@@ -165,6 +165,78 @@
                             </form>
                         </div>
                     </div>
+                    <div class=" scroll-design">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Initiated At') }}</th>
+                                        <th>{{ __('Open Amout') }}</th>
+                                        <th>{{ __('Current Amount') }}</th>
+                                        <th>{{ __('Price Is') }}</th>
+                                        <th>{{ __('Price Was') }}</th>
+                                        <th>{{ __('Direction') }}</th>
+                                        <th>{{ __('Ticker') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @forelse ($tradeLogs as $tradeLog)
+                                        <tr>
+                                            <td data-label="Initiated At">
+                                                {{ showDateTime($tradeLog->created_at) }}
+                                            </td>
+                                            <td data-label="{{ __('Open Amount') }}">
+                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->open_amount) }}
+                                            </td>
+                                            <td data-label="{{ __('Current Amount') }}">
+                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->amount) }}
+                                            </td>
+                                            <td data-label="{{ __('Price Is') }}">
+                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->price_is) }}
+                                            </td>
+                                            <td data-label="{{ __('Price Was') }}">
+                                                {{ getCurrencySymbol() }}{{ shortAmount($tradeLog->price_was) }}
+                                            </td>
+                                            <td data-label="{{ __('Direction') }}">
+                                                <span
+                                                    class="i-badge {{ $tradeLog->trade_type == 'sell' ? 'badge--danger' : 'badge--success' }}">{{ strtoupper($tradeLog->trade_type) }}</span>
+                                            </td>
+
+                                            <td data-label="{{ __('Ticker') }}">
+
+                                                @php
+                                                    if ($tradeLog->isCommodity == true) {
+                                                        $ticker = $tradeLog->commodity;
+                                                    } elseif ($tradeLog->isForex == true) {
+                                                        $ticker = $tradeLog->forex;
+                                                    } elseif ($tradeLog->isStock == true) {
+                                                        $ticker = $tradeLog->stock;
+                                                    }
+                                                @endphp
+
+                                                {{ $ticker }}
+                                            </td>
+
+                                            <td data-label="{{ __('Status') }}">
+                                                <span
+                                                    class="i-badge {{ $tradeLog->status == false ? 'badge--danger' : 'badge--success' }}">
+                                                    {{ $tradeLog->status == false ? 'running' : 'completed' }}
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td class="text-white text-center" colspan="100%">{{ __('No Data Found') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

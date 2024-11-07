@@ -57,7 +57,7 @@ Route::prefix('users/')->name('user.')->middleware(['auth', 'verified', 'firewal
         Route::get('commodities', [BinaryContoller::class, 'commodities'])->name('commodities');
         Route::get('forex', [BinaryContoller::class, 'forex'])->name('forex');
         Route::get('stocks', [BinaryContoller::class, 'stocks'])->name('stocks');
-        Route::get('history', [BinaryContoller::class, 'history'])->name('history');
+
         Route::get('trade/{type}/{symbol}', [BinaryContoller::class, 'trade'])->name('trade');
         Route::post('storeStock', [BinaryContoller::class, 'tradeStock'])->name('tradeStock');
         Route::post('storeCommodity', [BinaryContoller::class, 'tradeCommodity'])->name('tradeCommodity');
