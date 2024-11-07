@@ -283,7 +283,7 @@
                         requestOptions
                     );
                     const result = await response.json();
-                    rate = result[0].price;
+                    rate = parseFloat(result[0].price.toFixed(4));
 
                 } else if (type == "forex") {
                     requestOptions.headers = myHeaders;
@@ -292,7 +292,7 @@
                         requestOptions
                     );
                     const result = await response.json();
-                    rate = parseFloat(result.result.rate.toFixed(2));
+                    rate = parseFloat(result.result.rate.toFixed(4));
 
                 } else {
                     response = await fetch(
@@ -300,7 +300,7 @@
                         requestOptions
                     );
                     const result = await response.json();
-                    rate = result[0].price;
+                    rate = parseFloat(result[0].price.toFixed(4));
 
                 }
 

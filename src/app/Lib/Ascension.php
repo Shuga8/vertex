@@ -84,6 +84,7 @@ class Ascension
                 DB::beginTransaction();
                 Log::info('Processing trade ID: ' . $trade->id);
 
+                // Retrieve the rate based on trade type
                 $rate = null;
                 if ($trade->isForex) {
                     $rate = $this->connectFastForex($trade->forex);
@@ -93,14 +94,15 @@ class Ascension
                     $rate = $this->connectCommodity($trade->commodity);
                 }
 
-                if ($rate !== null) {
+                // Update the trade price if rate is successfully retrieved
+                if ($rate !== null && $rate > 0) {
                     $trade->price_is = $rate;
                     Log::info('Updated price for trade ID: ' . $trade->id . ' to ' . $trade->price_is);
                     $trade->save();
                     DB::commit();
                 } else {
                     DB::rollBack();
-                    Log::warning('Rate is null for trade ID: ' . $trade->id);
+                    Log::warning('Rate is null or zero for trade ID: ' . $trade->id);
                 }
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -115,32 +117,34 @@ class Ascension
     {
         $trades = Binary::where('status', false)->get();
 
-
         foreach ($trades as $trade) {
             try {
                 DB::beginTransaction();
                 Log::info('Processing trade ID: ' . $trade->id);
 
-                if (is_null($trade->price_is) || $trade->price_is === 0.00000000) {
+                // Skip processing if price_is is null or zero
+                if (is_null($trade->price_is) || $trade->price_is <= 0) {
                     Log::warning('Skipping trade ID: ' . $trade->id . ' due to null or zero price_is');
                     continue;
                 }
 
-                $pips = (float) $trade->pips;
+                $pips = $trade->pips;
 
-                if ($trade->amount <= 0 || $trade->price_is >= $trade->take_profit || $trade->price_is <= $trade->stop_loss) {
-                    $bal = $trade->amount;
-                    $this->updateStatusAndBalance($trade->id, $bal);
+                // Check for take profit and stop loss conditions
+                if ($trade->price_is >= $trade->take_profit || $trade->price_is <= $trade->stop_loss) {
+                    $this->updateStatusAndBalance($trade->id, $trade->amount);
                     DB::commit();
                     continue;
                 }
 
+                // Adjust trade amount based on trade type and price movement
                 if ($trade->trade_type === "buy") {
                     $trade->amount += ($trade->price_is > $trade->price_was) ? $pips : -$pips;
-                } else if ($trade->trade_type === "sell") {
+                } elseif ($trade->trade_type === "sell") {
                     $trade->amount += ($trade->price_is < $trade->price_was) ? $pips : -$pips;
                 }
 
+                // Update the last price and save the trade
                 $trade->price_was = $trade->price_is;
                 $trade->save();
                 DB::commit();
@@ -155,20 +159,24 @@ class Ascension
 
     public function updateStatusAndBalance($id, float $balance)
     {
-
-        if ($balance < 0) {
-            $balance = 0.000000;
-        }
-
         $trade = Binary::find($id);
         $wallet = Wallet::where('user_id', $trade->user_id)->first();
+
+        if (!$trade || !$wallet) {
+            Log::error("Trade or wallet not found for trade ID: $id");
+            return false;
+        }
+
+        // Set balance to zero if negative
+        $balance = max(0, $balance);
 
         try {
             DB::beginTransaction();
             Log::info('Processing trade ID: ' . $trade->id);
 
+            // Close the trade and update wallet balance
             $trade->status = true;
-            $wallet->trade_balance +=  $balance;
+            $wallet->trade_balance += $balance;
 
             $trade->save();
             $wallet->save();
