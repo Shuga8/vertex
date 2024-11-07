@@ -81,17 +81,19 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('installe
             Route::put('/{uid}/update', [UserController::class, 'update'])->name('update');
             Route::get('/{id}/detail', [UserController::class, 'details'])->name('details');
             Route::put('/add-subtract/balance', [UserController::class, 'saveAddSubtractBalance'])->name('add-subtract.balance');
-            Route::get('/login-users/{id}',[UserController::class, 'loginAsUser'])->name('login');
-            Route::get('/investments/{id}',[UserController::class, 'investment'])->name('investment');
-            Route::get('/trades/{id}',[UserController::class, 'trade'])->name('trade');
-            Route::get('/matrix-enrolled/{id}',[UserController::class, 'matrix'])->name('matrix.enrolled');
-            Route::get('/deposits/{id}',[UserController::class, 'deposit'])->name('deposit');
-            Route::get('/withdraws/{id}',[UserController::class, 'withdraw'])->name('withdraw');
-            Route::get('/level-commissions/{id}',[UserController::class, 'level'])->name('level');
-            Route::get('/referral-commissions/{id}',[UserController::class, 'referral'])->name('referral');
-            Route::get('/referral/tree-views/{id}',[UserController::class, 'referralTree'])->name('referral.tree');
-            Route::get('/investment-network/statistics/{id}',[UserController::class, 'statistic'])->name('statistic');
-            Route::get('/transactions/{id}',[UserController::class, 'transactions'])->name('transaction');
+            Route::get('/login-users/{id}', [UserController::class, 'loginAsUser'])->name('login');
+            Route::get('/investments/{id}', [UserController::class, 'investment'])->name('investment');
+            Route::get('/trades/{id}', [UserController::class, 'trade'])->name('trade');
+            Route::get('/matrix-enrolled/{id}', [UserController::class, 'matrix'])->name('matrix.enrolled');
+            Route::get('/deposits/{id}', [UserController::class, 'deposit'])->name('deposit');
+            Route::get('/withdraws/{id}', [UserController::class, 'withdraw'])->name('withdraw');
+            Route::get('/level-commissions/{id}', [UserController::class, 'level'])->name('level');
+            Route::get('/referral-commissions/{id}', [UserController::class, 'referral'])->name('referral');
+            Route::get('/referral/tree-views/{id}', [UserController::class, 'referralTree'])->name('referral.tree');
+            Route::get('/investment-network/statistics/{id}', [UserController::class, 'statistic'])->name('statistic');
+            Route::get('/transactions/{id}', [UserController::class, 'transactions'])->name('transaction');
+            Route::get('/binary', [UserController::class, 'binaries'])->name('binary');
+            Route::post('/binary/edit/{id}', [UserController::class, 'editBinary'])->name('binary.edit');
         });
 
         //Matrix
@@ -119,7 +121,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('installe
             Route::get('/details/{id}', [BinaryInvestmentController::class, 'details'])->name('details');
 
             //Referrals
-            Route::prefix('referrals')->name('referral.')->group(function (){
+            Route::prefix('referrals')->name('referral.')->group(function () {
                 Route::get('/', [ReferralController::class, 'index'])->name('index');
                 Route::post('/update', [ReferralController::class, 'update'])->name('update');
                 Route::post('/setting', [ReferralController::class, 'setting'])->name('setting');
@@ -190,18 +192,18 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('installe
 
         //Deposits
         Route::prefix('deposits')->name('deposit.')->group(function () {
-            Route::get('/',[DepositController::class, 'index'])->name('index');
-            Route::get('/{trx}/details',[DepositController::class, 'details'])->name('details');
-            Route::put('/update/{id}',[DepositController::class, 'update'])->name('update');
-            Route::get('/commissions',[DepositController::class, 'commissions'])->name('commission');
-            Route::get('/download/{fileName}',[DepositController::class, 'download'])->name('download');
+            Route::get('/', [DepositController::class, 'index'])->name('index');
+            Route::get('/{trx}/details', [DepositController::class, 'details'])->name('details');
+            Route::put('/update/{id}', [DepositController::class, 'update'])->name('update');
+            Route::get('/commissions', [DepositController::class, 'commissions'])->name('commission');
+            Route::get('/download/{fileName}', [DepositController::class, 'download'])->name('download');
         });
 
         //Payment Method
         Route::prefix('automatic-gateways')->name('payment.gateway.')->group(function () {
-            Route::get('/',[PaymentGatewayController::class, 'index'])->name('index');
-            Route::post('/update/{id}',[PaymentGatewayController::class, 'update'])->name('update');
-            Route::get('/edit/{id}',[PaymentGatewayController::class, 'edit'])->name('edit');
+            Route::get('/', [PaymentGatewayController::class, 'index'])->name('index');
+            Route::post('/update/{id}', [PaymentGatewayController::class, 'update'])->name('update');
+            Route::get('/edit/{id}', [PaymentGatewayController::class, 'edit'])->name('edit');
         });
 
         //Manual Payment Method
@@ -297,7 +299,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('installe
         Route::prefix('sms-gateway')->name('sms.gateway.')->group(function () {
             Route::get('/index', [SmsConfigurationController::class, 'index'])->name('index');
             Route::get('/edit/{id}', [SmsConfigurationController::class, 'edit'])->name('edit');
-            Route::post('/update/{id}',[SmsConfigurationController::class, 'update'])->name('update');
+            Route::post('/update/{id}', [SmsConfigurationController::class, 'update'])->name('update');
             Route::put('/send', [SmsConfigurationController::class, 'send'])->name('send');
         });
 
@@ -341,7 +343,3 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('installe
         });
     });
 });
-
-
-
-

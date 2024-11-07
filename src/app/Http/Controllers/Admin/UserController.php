@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
+use App\Models\Binary;
+use App\Models\Deposit;
+use Illuminate\View\View;
+use App\Models\Commission;
+use App\Models\WithdrawLog;
+use Illuminate\Http\Request;
 use App\Enums\CommissionType;
+use App\Services\UserService;
 use App\Enums\Trade\TradeType;
 use App\Enums\Transaction\Type;
-use App\Enums\Transaction\WalletType;
-use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 use App\Http\Requests\UserRequest;
-use App\Models\Commission;
-use App\Models\Deposit;
-use App\Models\User;
-use App\Models\WithdrawLog;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Enums\Transaction\WalletType;
+use Illuminate\Http\RedirectResponse;
+use App\Services\Payment\DepositService;
+use App\Services\Payment\WithdrawService;
+use App\Services\Trade\ActivityLogService;
+use App\Services\Payment\TransactionService;
 use App\Services\Investment\CommissionService;
 use App\Services\Investment\InvestmentService;
 use App\Services\Investment\MatrixInvestmentService;
-use App\Services\Payment\DepositService;
-use App\Services\Payment\TransactionService;
-use App\Services\Payment\WithdrawService;
-use App\Services\Trade\ActivityLogService;
-use App\Services\UserService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
-use Illuminate\View\View;
 
 class UserController extends Controller
 {
@@ -37,9 +39,7 @@ class UserController extends Controller
         protected WithdrawService $withdrawService,
         protected CommissionService $commissionService,
         protected TransactionService $transactionService,
-    ) {
-
-    }
+    ) {}
 
 
     /**
@@ -73,7 +73,7 @@ class UserController extends Controller
         $setTitle = __('admin.user.page_title.details');
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -153,7 +153,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($userId);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -174,7 +174,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -203,7 +203,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -222,7 +222,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -238,7 +238,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -260,7 +260,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -282,7 +282,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -299,7 +299,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -321,7 +321,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -340,7 +340,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -362,7 +362,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findById($id);
 
-        if(!$user){
+        if (!$user) {
             abort(404);
         }
 
@@ -382,7 +382,7 @@ class UserController extends Controller
     public function saveAddSubtractBalance(Request $request): RedirectResponse
     {
         $request->validate([
-            'amount' => ['required','numeric','gt:0'],
+            'amount' => ['required', 'numeric', 'gt:0'],
             'id' => ['required', Rule::exists('users', 'id')],
             'type' => ['required', Rule::in(Type::values())],
             'wallet_type' => ['required', Rule::in(WalletType::values())],
@@ -392,5 +392,65 @@ class UserController extends Controller
         return back()->with('notify', [['success', $notify]]);
     }
 
+    public function binaries(Request $request)
+    {
+        $query = Binary::latest();
 
+        if ($request->has('email')) {
+            $user = User::where('email', $request->email)->first();
+            if ($user) {
+                $query->where('user_id', $user->id);
+            } else {
+                // Return an empty paginated result if no user found
+                $emptyPagination = new \Illuminate\Pagination\LengthAwarePaginator([], 0, getPaginate());
+                return view('admin.user.binary')->with([
+                    'setTitle' => 'Binaries',
+                    'tradeLogs' => $emptyPagination
+                ]);
+            }
+        }
+
+        $data = [
+            'setTitle' => 'Binaries',
+            'tradeLogs' => $query->paginate(getPaginate())
+        ];
+
+        return view('admin.user.binary')->with($data);
+    }
+
+    public function editBinary(Request $request, $id = 0)
+    {
+        $request->validate([
+            'stop_loss' => ['required', 'numeric'],
+            'take_profit' => ['required', 'numeric'],
+            'amount' => ['required', 'numeric'],
+            'open_amount' => ['required', 'numeric'],
+        ]);
+
+        if ($id) {
+
+            try {
+                DB::beginTransaction();
+                $trade = Binary::where('id', $id)->first();
+
+                $trade->stop_loss = $request->stop_loss;
+                $trade->take_profit = $request->take_profit;
+                $trade->amount = $request->amount;
+                $trade->open_amount = $request->open_amount;
+
+
+                $trade->save();
+
+                DB::commit();
+
+                $notify[] = ['success', 'Edit successfull'];
+
+                return back()->withNotify($notify);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $notify[] = ['error', $e->getMessage()];
+                return back()->withNotify($notify);
+            }
+        }
+    }
 }

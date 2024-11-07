@@ -11,6 +11,14 @@ class Binary extends Model
 {
     use HasFactory;
 
+    public function scopeFilter($query, array $filters)
+    {
+        if ($filters['email'] ?? false) {
+            $user = User::where('email', request('email'))->firstOrFail();
+            $query->where("user_id", $user->id);
+        }
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
