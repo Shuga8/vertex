@@ -24,7 +24,7 @@
                                         {
                                             "autosize": true,
                                             "width": "100%",
-                                            "height": "750",
+                                            "height": "900",
                                             "symbol": "{{ $pair }}",
                                             "interval": "1",
                                             "timezone": "Etc/UTC",
@@ -54,6 +54,18 @@
                             </div>
                             <a href="{{ route('user.dashboard') }}" class="i-btn btn--primary btn--md capsuled"><i
                                     class="bi bi-chevron-left me-1"></i>{{ __('Dashboard') }}</a>
+                        </div>
+
+                        <div class="d-block market-widget my-3">
+                            <p class="text-success">
+                                <b class="text-primary">TRADE BALANCE</b> :
+                                ${{ number_format($wallet->trade_balance, '4', '.', ',') }}
+                            </p>
+
+                            <p class="my-1 text-success">
+                                <b class="text-primary">PRIMARY BALANCE</b> :
+                                ${{ number_format($wallet->primary_balance, '4', '.', ',') }}
+                            </p>
                         </div>
 
                         <div class="market-widget mb-4">
@@ -388,8 +400,8 @@
                             </td>
                             <td data-label="Action">
                                 ${statusText == "running" ? `<a class="i-btn btn--md btn--danger capsuled" href="{{ config('app.url') }}/users/isolation/end/${tradeLog.id}">End</a>
-                                                                                                </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
-                                                                                                </td>` }
+                                                                                                                                                                                                                                </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
+                                                                                                                                                                                                                                </td>` }
                                 
                         </tr>
                     `;

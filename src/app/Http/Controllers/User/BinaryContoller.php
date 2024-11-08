@@ -60,7 +60,8 @@ class BinaryContoller extends Controller
             'symbol' => $symbol,
             'type' => $type,
             'pair' => $pair,
-            'tradeLogs' => ModelBinary::where('user_id', auth()->user()->id)->paginate(getPaginate())
+            'tradeLogs' => ModelBinary::where('user_id', auth()->user()->id)->paginate(getPaginate()),
+            'wallet' => Wallet::where('user_id', auth()->user()->id)->first()
         ];
 
 
