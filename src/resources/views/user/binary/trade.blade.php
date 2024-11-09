@@ -185,6 +185,7 @@
                                         <th>{{ __('Initiated At') }}</th>
                                         <th>{{ __('Open Amout') }}</th>
                                         <th>{{ __('Current/Closed Amount') }}</th>
+                                        <th>{{ __('Profit/Loss') }}</th>
                                         <th>{{ __('Price Is') }}</th>
                                         <th>{{ __('Price Was') }}</th>
                                         <th>{{ __('Direction') }}</th>
@@ -377,12 +378,22 @@
                                     const tradeTypeBadge = tradeLog.trade_type === 'sell' ?
                                         'badge--danger' : 'badge--success';
 
+                                    const profitLoss = parseFloat(tradeLog.amount) - parseFloat(
+                                        tradeLog.open_amount);
+
+                                    const profitLossBadge = parseFloat(tradeLog.open_amount) >
+                                        parseFloat(tradeLog.amount) ? 'badge--danger' :
+                                        'badge--success';
+
                                     // Generate the row HTML
                                     const row = `
                         <tr>
                             <td data-label="Initiated At">${new Date(tradeLog.created_at).toLocaleString()}</td>
                             <td data-label="Open Amount">{{ getCurrencySymbol() }}${parseFloat(tradeLog.open_amount).toFixed(4)}</td>
                             <td data-label="Current Amount">{{ getCurrencySymbol() }}${parseFloat(tradeLog.amount).toFixed(4)}</td>
+                            <td data-label="ProfitLoss">
+                                <span class="i-badge ${profitLossBadge}">${parseFloat(profitLoss).toFixed(2)}</span>
+                            </td>
                             <td data-label="Price Is">{{ getCurrencySymbol() }}${parseFloat(tradeLog.price_is).toFixed(4)}</td>
                             <td data-label="Price Was">{{ getCurrencySymbol() }}${parseFloat(tradeLog.price_was).toFixed(4)}</td>
                             <td data-label="Direction">
@@ -400,8 +411,8 @@
                             </td>
                             <td data-label="Action">
                                 ${statusText == "running" ? `<a class="i-btn btn--md btn--danger capsuled" href="{{ config('app.url') }}/users/isolation/end/${tradeLog.id}">End</a>
-                                                                                                                                                                                                                                </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
-                                                                                                                                                                                                                                </td>` }
+                                                                                                                                                                                                                                                                                        </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
+                                                                                                                                                                                                                                                                                        </td>` }
                                 
                         </tr>
                     `;
