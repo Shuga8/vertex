@@ -111,5 +111,6 @@ Route::prefix('users/')->name('user.')->middleware(['auth', 'verified', 'firewal
         Route::get('cancel', [PaymentController::class, 'cancel'])->name('cancel');
         Route::get('preview', [PaymentController::class, 'preview'])->name('preview');
         Route::put('traditional', [PaymentController::class, 'traditional'])->name('traditional');
+        Route::post('pay', [PaymentController::class, 'pay'])->name('pay');
     });
 });

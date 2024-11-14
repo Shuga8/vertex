@@ -33,9 +33,7 @@ class PaymentController extends Controller
         protected PaymentService $paymentService,
         protected DepositService $depositService,
         protected CommissionService $commissionService,
-    ){
-
-    }
+    ) {}
 
     public function index(): View
     {
@@ -66,16 +64,15 @@ class PaymentController extends Controller
         try {
             $gateway = $this->paymentService->findByCode($request->input('code'));
             if ($request->input('amount') < $gateway->minimum || $request->input('amount') > $gateway->maximum) {
-                return back()->with('notify', [['error', 'The investment amount should be between ' . getCurrencySymbol().shortAmount($gateway->minimum) . ' and ' . getCurrencySymbol().shortAmount($gateway->maximum)]]);
+                return back()->with('notify', [['error', 'The investment amount should be between ' . getCurrencySymbol() . shortAmount($gateway->minimum) . ' and ' . getCurrencySymbol() . shortAmount($gateway->maximum)]]);
             }
 
             $payment = $this->paymentService->makePayment($gateway, $request, (float) $request->input('amount'));
-            if(is_null($payment)){
+            if (is_null($payment)) {
                 return back()->with('notify', [['warning', "$gateway->name Api has issues, please try again later"]]);
             }
             return redirect()->to($payment);
-
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             return back()->with('notify', [['warning', $exception->getMessage()]]);
         }
     }
@@ -89,15 +86,15 @@ class PaymentController extends Controller
     {
         $trxId = null;
 
-        if($request->query('gateway_code') == GatewayCode::STRIPE->value){
+        if ($request->query('gateway_code') == GatewayCode::STRIPE->value) {
             $paymentGateway = $this->paymentService->findByCode(GatewayCode::STRIPE->value);
-            Stripe::setApiKey(Arr::get($paymentGateway->parameter,'secret_key'));
+            Stripe::setApiKey(Arr::get($paymentGateway->parameter, 'secret_key'));
 
             $paymentIntent = Session::retrieve($request->query('payment_intent'));
             $trxId = $paymentIntent->metadata['transaction_id'] ?? '';
         }
 
-        if($request->query('gateway_code') == GatewayCode::PAYPAL->value){
+        if ($request->query('gateway_code') == GatewayCode::PAYPAL->value) {
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
             $provider->getAccessToken();
@@ -107,11 +104,11 @@ class PaymentController extends Controller
             }
         }
 
-        if($request->query('gateway_code') == GatewayCode::COINBASE_COMMERCE->value){
+        if ($request->query('gateway_code') == GatewayCode::COINBASE_COMMERCE->value) {
             $trxId = $request->query('trx');
         }
 
-        if($request->query('gateway_code') == GatewayCode::COIN_GATE->value){
+        if ($request->query('gateway_code') == GatewayCode::COIN_GATE->value) {
             $trxId = $request->query('payment_intent');
         }
 
@@ -157,7 +154,7 @@ class PaymentController extends Controller
         $gateway = $this->paymentService->findByCode($request->input('gateway_code'));
         $deposit = $this->depositService->findByTrxId($request->input('payment_intent'));
 
-        if(!$gateway || !$deposit){
+        if (!$gateway || !$deposit) {
             abort(401);
         }
 
@@ -172,5 +169,5 @@ class PaymentController extends Controller
     }
 
 
-
+    public function pay(Request $request) {}
 }
