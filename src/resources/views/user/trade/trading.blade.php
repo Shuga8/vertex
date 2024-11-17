@@ -1,6 +1,8 @@
 @extends('layouts.auth')
 @section('content')
-    <main>
+    @include('user.partials.top-bar')
+    @include('user.partials.side-bar')
+    <main class="main-content" data-simplebar>
         <div class="trading-section pt-5 pb-110">
             <div class="container i-container">
                 <div class="row g-4">
@@ -15,7 +17,7 @@
                         @include('user.partials.trade.binary-trade')
                     </div>
                     <div class="col-xl-12">
-                    @include('user.partials.trade.trade-log')
+                        @include('user.partials.trade.trade-log')
                     </div>
                 </div>
             </div>
@@ -29,7 +31,8 @@
         $(document).ready(function() {
             $("#amount").on('keyup', function() {
                 const inputAmount = parseFloat($(this).val());
-                const commissionPercentage = {{ getArrayValue($setting->commissions_charge, 'binary_trade_commissions', 0) }};
+                const commissionPercentage =
+                    {{ getArrayValue($setting->commissions_charge, 'binary_trade_commissions', 0) }};
 
                 if (isNaN(inputAmount)) {
                     $("#profit_amount").text('+' + 0.00);
@@ -44,9 +47,3 @@
         });
     </script>
 @endpush
-
-
-
-
-
-

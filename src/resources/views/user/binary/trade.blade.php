@@ -1,6 +1,8 @@
 @extends('layouts.auth')
 @section('content')
-    <main>
+    @include('user.partials.top-bar')
+    @include('user.partials.side-bar')
+    <main class="main-content" data-simplebar>
         @push('style-push')
             <style>
                 .bot-trading {
@@ -411,8 +413,8 @@
                             </td>
                             <td data-label="Action">
                                 ${statusText == "running" ? `<a class="i-btn btn--md btn--danger capsuled" href="{{ config('app.url') }}/users/isolation/end/${tradeLog.id}">End</a>
-                                                                                                                                                                                                                                                                                                </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
-                                                                                                                                                                                                                                                                                                </td>` }
+                                                                                                                                                                                                                                                                                                        </td>` : `<a class="i-btn btn--md btn--success capsuled">Closed</a>
+                                                                                                                                                                                                                                                                                                        </td>` }
                                 
                         </tr>
                     `;

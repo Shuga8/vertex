@@ -2,12 +2,31 @@
     <div class="card--title mb-0">
         <h5 class="mb-0">{{ __('Rise/Fall') }}</h5>
     </div>
-    <a href="{{ route('user.dashboard') }}" class="i-btn btn--primary btn--md capsuled"><i class="bi bi-chevron-left me-1"></i>{{ __('Dashboard') }}</a>
+    <a href="{{ route('user.dashboard') }}" class="i-btn btn--primary btn--md capsuled"><i
+            class="bi bi-chevron-left me-1"></i>{{ __('Dashboard') }}</a>
+</div>
+
+@php
+    $wallet = \App\Models\Wallet::where('user_id', auth()->user()->id)->first();
+@endphp
+
+<div class="d-block market-widget my-3">
+    <p class="text-success">
+        <b class="text-primary">TRADE BALANCE</b> :
+        ${{ number_format($wallet->trade_balance, '4', '.', ',') }}
+    </p>
+
+    <p class="my-1 text-success">
+        <b class="text-primary">PRIMARY BALANCE</b> :
+        ${{ number_format($wallet->primary_balance, '4', '.', ',') }}
+    </p>
 </div>
 <div class="market-widget mb-4">
     <form method="POST" action="{{ route('user.trade.store', $crypto->id) }}">
         @csrf
-        <input type="hidden" value="{{ request()->routeIs('user.trade.practice') ? \App\Enums\Trade\TradeType::PRACTICE->value : \App\Enums\Trade\TradeType::TRADE->value }}" name="type">
+        <input type="hidden"
+            value="{{ request()->routeIs('user.trade.practice') ? \App\Enums\Trade\TradeType::PRACTICE->value : \App\Enums\Trade\TradeType::TRADE->value }}"
+            name="type">
         <div class="input-single">
             <label for="amount">{{ __('Amount') }}</label>
             <input type="text" id="amount" name="amount" value="{{ old('amount') }}" placeholder="0.00" required>
@@ -17,9 +36,10 @@
             <label for="parameter">{{ __('Expiry Time') }}</label>
             <select type="text" id="parameter" name="parameter_id" required>
                 <option value="">{{ __('Select Expiration Time') }}</option>
-                @foreach($parameters as $key => $parameter)
+                @foreach ($parameters as $key => $parameter)
                     <option value="{{ $parameter->id }}">
-                        {{ __('Time') }}: {{$parameter->time.' ' .\App\Enums\Trade\TradeParameterUnit::getName($parameter->unit) }}
+                        {{ __('Time') }}:
+                        {{ $parameter->time . ' ' . \App\Enums\Trade\TradeParameterUnit::getName($parameter->unit) }}
                     </option>
                 @endforeach
             </select>
@@ -32,8 +52,12 @@
             <p>{{ __('Profit') }}</p>
         </div>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            <button type="submit" name="volume" value="{{ \App\Enums\Trade\TradeVolume::HIGH->value }}" class="i-btn btn--md btn--success capsuled w-100">{{ __(\App\Enums\Trade\TradeVolume::getName(\App\Enums\Trade\TradeVolume::HIGH->value)) }} <i class="bi bi-arrow-up"></i></button>
-            <button type="submit" name="volume" value="{{ \App\Enums\Trade\TradeVolume::LOW->value }}" class="i-btn btn--md btn--danger capsuled w-100">{{ __(\App\Enums\Trade\TradeVolume::getName(\App\Enums\Trade\TradeVolume::LOW->value)) }} <i class="bi bi-arrow-down"></i></button>
+            <button type="submit" name="volume" value="{{ \App\Enums\Trade\TradeVolume::HIGH->value }}"
+                class="i-btn btn--md btn--success capsuled w-100">{{ __(\App\Enums\Trade\TradeVolume::getName(\App\Enums\Trade\TradeVolume::HIGH->value)) }}
+                <i class="bi bi-arrow-up"></i></button>
+            <button type="submit" name="volume" value="{{ \App\Enums\Trade\TradeVolume::LOW->value }}"
+                class="i-btn btn--md btn--danger capsuled w-100">{{ __(\App\Enums\Trade\TradeVolume::getName(\App\Enums\Trade\TradeVolume::LOW->value)) }}
+                <i class="bi bi-arrow-down"></i></button>
         </div>
     </form>
 </div>
