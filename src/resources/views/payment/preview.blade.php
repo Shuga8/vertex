@@ -46,7 +46,7 @@
                             </ul>
 
                             <hr>
-                            <select class="form-select form-select-lg" aria-label="Default select example" id="country">
+                            {{-- <select class="form-select form-select-lg" aria-label="Default select example" id="country">
                                 <option value="">Select Country</option>
                                 <option value="AF">Afghanistan</option>
                                 <option value="AX">Åland Islands</option>
@@ -202,11 +202,11 @@
                                 <option value="MM">Myanmar</option>
                                 <option value="NA">Namibia</option>
 
-                            </select>
+                            </select> --}}
                         </div>
 
-                        <form method="POST" action="{{ route('user.payment.traditional') }}"
-                            enctype="multipart/form-data" class="d-none manual_form">
+                        <form method="POST" action="{{ route('user.payment.traditional') }}" enctype="multipart/form-data"
+                            class="manual_form">
                             @csrf
                             @method('PUT')
                             <input type="hidden" name="payment_intent" value="{{ $payment->trx }}">
@@ -241,47 +241,9 @@
                                 <button type="submit" class="i-btn btn--primary btn--lg">{{ __('Save') }}</button>
                             </div>
                         </form>
-
-                        <div class="zain-container row mx-auto d-none" style="max-width: 350px;margin: 0px auto;">
-                            <div class="block my-2 text-primary" style="text-transform: uppercase;font-weight:500;">Pay
-                                With
-                            </div>
-                            <div class="col-3 my-3">
-                                <img src="{{ asset('assets/icons/zain.png') }}" alt="">
-                            </div>
-
-                            <div class="my-3">
-
-                                <p class="text-success">Contact us via whatsap</p>
-                                <a href="http://wa.me/201144472763" style="width: 100%;">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-                                        alt="" style="width: 50px;height:50px;object-fit:contain;">
-                                </a>
-                            </div>
-
-                        </div>
                     @endif
                 </div>
             </div>
         </div>
-
-        @push('script-push')
-            <script>
-                $('document').ready(function() {
-                    var country = $("#country");
-                    var zain = document.querySelector(".zain-container");
-                    var manual = document.querySelector(".manual_form")
-                    country.change(function(e) {
-                        if (e.target.value == "IQ") {
-                            zain.classList.replace("d-none", "d-block");
-                            manual.classList.replace("d-block", "d-none");
-                        } else {
-                            zain.classList.replace("d-block", "d-none");
-                            manual.classList.replace("d-none", "d-block");
-                        }
-                    })
-                })
-            </script>
-        @endpush
     </div>
 @endsection
