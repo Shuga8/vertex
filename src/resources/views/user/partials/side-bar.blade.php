@@ -105,14 +105,14 @@
                         data-bs-toggle="collapse" href="#collapseTrade" role="button" aria-expanded="false"
                         aria-controls="collapseTrade">
                         <span><i class="bi bi-bar-chart"></i></span>
-                        <p>{{ __('Crypto') }} <small><i
+                        <p>{{ __('Trade Now') }} <small><i
                                     class="las la-angle-{{ request()->routeIs(['user.investment.index', 'user.investment.funds', 'user.investment.profit.statistics']) ? 'up' : 'down' }}"></i></small>
                         </p>
                     </a>
                     <div class="side-menu-dropdown collapse {{ request()->routeIs('user.trade.*') ? 'show' : '' }}"
                         id="collapseTrade">
                         <ul class="sub-menu  {{ request()->routeIs('user.trade.*') ? 'open-slide' : '' }}">
-                            @foreach (['index' => 'Trade Now', 'tradelog' => 'History', 'practicelog' => 'Practices'] as $trade => $label)
+                            @foreach (['index' => 'Crypto', 'forex' => 'Forex', 'commodities' => 'Commodity', 'stocks' => 'Stocks', 'tradelog' => 'History', 'practicelog' => 'Practices'] as $trade => $label)
                                 <li class="sub-menu-item">
                                     <a class="sidebar-menu-link {{ request()->routeIs("user.trade.$trade") ? 'active' : '' }}"
                                         href="{{ route("user.trade.$trade") }}" aria-expanded="false">
@@ -125,7 +125,7 @@
                 </li>
             @endif
 
-            <li class="sidebar-menu-item">
+            {{-- <li class="sidebar-menu-item">
                 <a class="sidebar-menu-link collapsed {{ request()->routeIs('user.binary.*') ? 'active' : '' }}"
                     data-bs-toggle="collapse" href="#collapseBinary" role="button" aria-expanded="false"
                     aria-controls="collapseBinary">
@@ -147,7 +147,7 @@
                         @endforeach
                     </ul>
                 </div>
-            </li>
+            </li> --}}
 
 
             <li class="sidebar-menu-item">
